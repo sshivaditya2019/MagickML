@@ -66,7 +66,8 @@ function install(
               stack: err.stack,
             },
           })
-          socket?.emit(`${currentSpell.id}-error`, {
+          //.id in case of uuid branch
+          socket?.emit(`${currentSpell.name}-error`, {
             error: {
               message: err.message,
               stack: err.stack,
