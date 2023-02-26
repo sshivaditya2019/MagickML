@@ -77,7 +77,7 @@ const Playtest = ({ tab }) => {
   const FeathersContext = useFeathers()
   const dispatch = useDispatch()
   const { serialize } = useEditor()
-
+  const { enqueueSnackbar } = useSnackbar()
   const { data: spellData } = spellApi.useGetSpellQuery(
     { spellName: tab.spellName, projectId: config.projectId },
     {
@@ -93,7 +93,7 @@ const Playtest = ({ tab }) => {
   })
 
   const client = FeathersContext?.client
-  const { $PLAYTEST_INPUT, $PLAYTEST_PRINT } = events
+  const { $PLAYTEST_INPUT, $PLAYTEST_PRINT, $DEBUG_PRINT } = events
 
   const printToConsole = useCallback(
     (_, _text) => {
@@ -226,7 +226,14 @@ const Playtest = ({ tab }) => {
       },
     })
 
-    publish($PLAYTEST_INPUT(tab.id), toSend)
+    publish($PLAYTEST_INPUT(tab.name), toSend)
+    client.io.on(`${tab.id}-error`, (data) => {
+      //publish($DEBUG_PRINT(tab.id), (data.error.message))
+      console.log("Error in spell execution")
+      enqueueSnackbar('Error Running the spell. Please Check the Console', {
+        variant: 'error',
+      })
+    })
     setValue('')
   }
 
